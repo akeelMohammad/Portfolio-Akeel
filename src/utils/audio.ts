@@ -1,3 +1,5 @@
+import { assetUrl } from './assetUrl';
+
 /**
  * Audio controller for background soundtrack and interaction sound effects
  */
@@ -17,15 +19,15 @@ class SoundController {
   private init() {
     if (this.isInitialized || typeof window === 'undefined') return;
     try {
-      this.bgAudio = new Audio('/audio/BG_music_ST.mp3');
+      this.bgAudio = new Audio(assetUrl('/audio/BG_music_ST.mp3'));
       this.bgAudio.loop = true;
       this.bgAudio.volume = 0.45;
 
-      this.releaseAudio = new Audio('/audio/ReleaseSpirit.mp3');
+      this.releaseAudio = new Audio(assetUrl('/audio/ReleaseSpirit.mp3'));
       this.releaseAudio.volume = 0.7;
 
       for (let i = 1; i <= 3; i++) {
-        const a = new Audio(`/audio/hover${i}.mp3`);
+        const a = new Audio(assetUrl(`/audio/hover${i}.mp3`));
         a.volume = 0.25;
         this.hoverAudios.push(a);
       }

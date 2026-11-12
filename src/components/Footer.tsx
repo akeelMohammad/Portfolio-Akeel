@@ -1,5 +1,6 @@
 import React from 'react';
 import { soundManager } from '../utils/audio';
+import { assetUrl } from '../utils/assetUrl';
 
 interface FooterProps {
   opacity: number;
@@ -30,12 +31,12 @@ export const Footer: React.FC<FooterProps> = ({ opacity }) => {
         >
           <img
             alt="AM Logo Glow"
-            src="/images/logoAmFullLight.png"
+            src={assetUrl('/images/logoAmFullLight.png')}
             className="absolute h-full w-auto filter blur-2xl opacity-60 pointer-events-none"
           />
           <img
             alt="AM Logo"
-            src="/images/logoAmFullLight.png"
+            src={assetUrl('/images/logoAmFullLight.png')}
             className="relative h-full w-auto transition-transform duration-500 hover:scale-105 object-contain"
           />
         </div>
@@ -111,12 +112,6 @@ export const Footer: React.FC<FooterProps> = ({ opacity }) => {
           </a>
         </div>
 
-        <div
-          className="uppercase tracking-widest text-white/40 whitespace-nowrap hidden md:block order-3"
-          style={{ fontSize: 'clamp(0.55rem, 0.85vw, 0.78rem)' }}
-        >
-          BICT (Hons) · USJ
-        </div>
       </div>
     </footer>
   );

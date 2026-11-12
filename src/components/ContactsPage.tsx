@@ -1,5 +1,6 @@
 import React from 'react';
 import { soundManager } from '../utils/audio';
+import { assetUrl } from '../utils/assetUrl';
 
 interface ContactsPageProps {
   onClose: () => void;
@@ -20,12 +21,12 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({ onClose }) => {
           <img
             className="absolute blur-xl h-full w-auto opacity-60 pointer-events-none"
             alt="Phoenix emblem glow"
-            src="/images/svg/logoSimple.svg"
+            src={assetUrl('/images/svg/logoSimple.svg')}
           />
           <img
             className="relative h-full w-auto"
             alt="Phoenix emblem"
-            src="/images/svg/logoSimple.svg"
+            src={assetUrl('/images/svg/logoSimple.svg')}
           />
         </div>
 

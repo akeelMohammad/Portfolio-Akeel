@@ -2,6 +2,7 @@ import React from 'react';
 import { CASE_STUDIES, CaseStudyData } from '../data/cases';
 import { soundManager } from '../utils/audio';
 import { getCumulativeVh, TOTAL_DESKTOP_VH, clamp } from '../utils/math';
+import { assetUrl } from '../utils/assetUrl';
 
 export interface CrystalScreenPos {
   x: number; // 0..1 screen normalized
@@ -554,7 +555,7 @@ export const StoryChapters: React.FC<StoryChaptersProps> = ({
                 >
                   <img
                     alt=""
-                    src="/images/svg/tagsStar.svg"
+                    src={assetUrl('/images/svg/tagsStar.svg')}
                     className="w-2 h-2 sm:w-2.5 sm:h-2.5 object-contain opacity-75 shrink-0"
                   />
                   <span>Jan 2026 – Oct 2026</span>
@@ -625,7 +626,7 @@ export const StoryChapters: React.FC<StoryChaptersProps> = ({
                 >
                   <img
                     alt=""
-                    src="/images/svg/tagsStar.svg"
+                    src={assetUrl('/images/svg/tagsStar.svg')}
                     className="w-2 h-2 sm:w-2.5 sm:h-2.5 object-contain opacity-75 shrink-0"
                   />
                   <span>Feb 2024 – Aug 2024</span>

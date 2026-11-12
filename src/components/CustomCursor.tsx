@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CaseStudyData } from '../data/cases';
+import { assetUrl } from '../utils/assetUrl';
 
 interface CustomCursorProps {
   hoveredCase?: CaseStudyData | null;
@@ -89,7 +90,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ hoveredCase }) => {
         {/* Rotating Inner SVG Border */}
         <img
           alt=""
-          src="/images/svg/cursor_border.svg"
+          src={assetUrl('/images/svg/cursor_border.svg')}
           className={`absolute w-12 h-12 object-contain animate-spin transition-opacity duration-300 ${
             hovered && !hoveredCase ? 'opacity-0' : 'opacity-90'
           }`}
@@ -100,7 +101,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ hoveredCase }) => {
         {hoveredCase ? (
           <img
             alt=""
-            src="/images/svg/backArrowNew.svg"
+            src={assetUrl('/images/svg/backArrowNew.svg')}
             className="absolute w-3.5 h-3.5 -rotate-45"
           />
         ) : (

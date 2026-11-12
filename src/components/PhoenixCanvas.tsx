@@ -12,6 +12,7 @@ import {
 import { CASE_STUDIES, CaseStudyData } from '../data/cases';
 import { soundManager } from '../utils/audio';
 import { CrystalScreenPos } from './StoryChapters';
+import { assetUrl } from '../utils/assetUrl';
 
 interface PhoenixCanvasProps {
   scrollProgress: number; // 0 to 1
@@ -95,6 +96,32 @@ interface TimelineController {
   mixer: THREE.AnimationMixer;
   actions: Array<{ action: THREE.AnimationAction; duration: number }>;
   nodes: Record<string, THREE.Object3D>;
+}
+
+interface RenderQuality {
+  isMobile: boolean;
+  isLowPower: boolean;
+  pixelRatio: number;
+  renderScale: number;
+  targetFrameInterval: number;
+}
+
+function getRenderQuality(): RenderQuality {
+  const isMobile = window.matchMedia('(max-width: 767px)').matches;
+  const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hardwareConcurrency = navigator.hardwareConcurrency || 4;
+  const deviceMemory = 'deviceMemory' in navigator
+    ? Number((navigator as Navigator & { deviceMemory?: number }).deviceMemory || 4)
+    : 4;
+  const isLowPower = isReducedMotion || hardwareConcurrency <= 4 || deviceMemory <= 4;
+
+  return {
+    isMobile,
+    isLowPower,
+    pixelRatio: Math.min(window.devicePixelRatio || 1, isMobile || isLowPower ? 1.5 : 2),
+    renderScale: isLowPower ? 0.85 : 1,
+    targetFrameInterval: isReducedMotion ? 50 : isLowPower ? 33 : 0,
+  };
 }
 
 function buildTimelineController(gltf: {
@@ -218,6 +245,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     );
     camera.position.set(-34.448, 0, 0);
     camera.lookAt(-0.019, 0, 0);
+    const renderQuality = getRenderQuality();
 
     let renderer: THREE.WebGLRenderer;
     let isSoftwareGl = false;
@@ -233,7 +261,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
         : '';
       isSoftwareGl = /SwiftShader|llvmpipe|Software|SubZero/i.test(rendererStr);
 
-      const scaleFactor = isSoftwareGl ? 0.5 : 1;
+      const scaleFactor = isSoftwareGl ? 0.5 : renderQuality.renderScale;
       renderer.setSize(
         Math.max(1, Math.floor(window.innerWidth * scaleFactor)),
         Math.max(1, Math.floor(window.innerHeight * scaleFactor)),
@@ -241,7 +269,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       );
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
-      renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(isSoftwareGl ? 1 : renderQuality.pixelRatio);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
     } catch {
@@ -335,14 +363,14 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     scene.add(fireLight);
 
     const textureLoader = new THREE.TextureLoader();
-    const colorsMapTex = textureLoader.load('/textures/colorsMap.png');
+    const colorsMapTex = textureLoader.load(assetUrl('/textures/colorsMap.png'));
     colorsMapTex.minFilter = THREE.LinearFilter;
     colorsMapTex.magFilter = THREE.LinearFilter;
     colorsMapTex.colorSpace = THREE.SRGBColorSpace;
 
     if (!isSoftwareGl) {
       const rgbeLoader = new RGBELoader();
-      rgbeLoader.load('/textures/wooden_studio_19_1k.hdr', (hdrTex) => {
+      rgbeLoader.load(assetUrl('/textures/wooden_studio_19_1k.hdr'), (hdrTex) => {
         hdrTex.mapping = THREE.EquirectangularReflectionMapping;
         scene.environment = hdrTex;
       });
@@ -492,7 +520,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     let isDisposed = false;
 
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('/draco/');
+    dracoLoader.setDecoderPath(assetUrl('/draco/'));
     const gltfLoader = new GLTFLoader();
     gltfLoader.setDRACOLoader(dracoLoader);
 
@@ -534,13 +562,16 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     let camTimeline: TimelineController | null = null;
     let devTimeline: TimelineController | null = null;
 
-    safeLoadGLTF('/timelines/cam.glb', (gltf) => {
+    safeLoadGLTF(
+      assetUrl(renderQuality.isMobile ? '/timelines/cam-mob.glb' : '/timelines/cam.glb'),
+      (gltf) => {
       camTimeline = buildTimelineController(gltf);
       const initT = scrollProgressToTimelineSeconds(scrollRef.current);
       seekTimelineController(camTimeline, initT);
-    });
+      }
+    );
 
-    safeLoadGLTF('/timelines/dev.glb', (gltf) => {
+    safeLoadGLTF(assetUrl('/timelines/dev.glb'), (gltf) => {
       devTimeline = buildTimelineController(gltf);
       const initT = scrollProgressToTimelineSeconds(scrollRef.current);
       seekTimelineController(devTimeline, initT);
@@ -577,7 +608,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       currentPhoenixAction = nextAction;
     };
 
-    safeLoadGLTF('/models/v20.glb', (gltf) => {
+    safeLoadGLTF(assetUrl('/models/v20.glb'), (gltf) => {
       const root = gltf.scene.children[0] || gltf.scene;
       phoenixModelRoot = root;
 
@@ -624,7 +655,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     });
 
     // 6. Sun Glow Sprite (matches class hl in CbdjwYMp.js)
-    const sunTex = textureLoader.load('/textures/icon.png', undefined, undefined, () => {});
+    const sunTex = textureLoader.load(assetUrl('/textures/icon.png'), undefined, undefined, () => {});
     const sunMat = new THREE.SpriteMaterial({
       map: sunTex,
       color: 0xffffff,
@@ -643,7 +674,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     featherGroup.visible = false;
     scene.add(featherGroup);
 
-    const spriteTex = textureLoader.load('/textures/sprite.png', undefined, undefined, () => {});
+    const spriteTex = textureLoader.load(assetUrl('/textures/sprite.png'), undefined, undefined, () => {});
     const featherGlowMat = new THREE.SpriteMaterial({
       map: spriteTex,
       color: 0xa5b4fc,
@@ -657,7 +688,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     featherGroup.add(featherGlow);
 
     let featherMesh: THREE.Object3D | null = null;
-    safeLoadGLTF('/models/feather.glb', (gltf) => {
+    safeLoadGLTF(assetUrl('/models/feather.glb'), (gltf) => {
       const mesh = gltf.scene;
       featherMesh = mesh;
       mesh.traverse((child: THREE.Object3D) => {
@@ -718,7 +749,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       crystalContainers.push(holder);
 
       const normalMap = textureLoader.load(
-        `/textures/crystals/${idx}.jpg`,
+        assetUrl(`/textures/crystals/${idx}.jpg`),
         undefined,
         undefined,
         () => {}
@@ -779,7 +810,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       // 2. Staggered load to avoid Cloud Run concurrent burst limits (HTTP 429) + automatic exponential backoff
       setTimeout(() => {
         if (isDisposed) return;
-        safeLoadGLTF(`/models/crystal${idx}.glb`, (gltf) => {
+        safeLoadGLTF(assetUrl(`/models/crystal${idx}.glb`), (gltf) => {
           if (isDisposed) return;
           const model = gltf.scene;
           model.traverse((child: THREE.Object3D) => {
@@ -902,7 +933,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      const scaleFactor = isSoftwareGl ? 0.5 : 1;
+      const scaleFactor = isSoftwareGl ? 0.5 : renderQuality.renderScale;
       renderer.setSize(
         Math.max(1, Math.floor(window.innerWidth * scaleFactor)),
         Math.max(1, Math.floor(window.innerHeight * scaleFactor)),
@@ -916,6 +947,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     let frameId = 0;
     isDisposed = false;
     let lastCrystalEmitTime = 0;
+    let lastFrameTime = 0;
 
     // Reusable objects for zero-allocation frame loop
     const camPosVec = new THREE.Vector3(-34.448, 0, 0);
@@ -928,8 +960,17 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     const targetFringeColor = new THREE.Color('#f3d0f2');
     const crystalNdc = new THREE.Vector3();
 
-    const animate = () => {
+    const animate = (now = performance.now()) => {
       if (isDisposed) return;
+
+      const targetFrameInterval = isSoftwareGl
+        ? 140
+        : renderQuality.targetFrameInterval;
+      if (targetFrameInterval > 0 && now - lastFrameTime < targetFrameInterval) {
+        frameId = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = now;
 
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.getElapsedTime();
@@ -1233,14 +1274,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
 
       renderer.render(scene, camera);
 
-      if (isSoftwareGl) {
-        frameId = window.setTimeout(
-          () => requestAnimationFrame(animate),
-          140
-        ) as unknown as number;
-      } else {
-        frameId = requestAnimationFrame(animate);
-      }
+      frameId = requestAnimationFrame(animate);
     };
 
     frameId = requestAnimationFrame(animate);

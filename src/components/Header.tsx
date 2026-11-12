@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { soundManager } from '../utils/audio';
+import { assetUrl } from '../utils/assetUrl';
 
 export type SectionId = 'about' | 'experience' | 'skills' | 'projects' | 'contact';
 
@@ -89,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <img
               alt="AM Logo"
-              src={isDark ? '/images/logoAmLight.png' : '/images/logoAmDark.png'}
+              src={assetUrl(isDark ? '/images/logoAmLight.png' : '/images/logoAmDark.png')}
               className="h-full w-auto object-contain transition-opacity duration-300"
             />
           </div>
@@ -186,7 +187,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <img
               alt="sound border"
-              src="/images/svg/soundBorder.svg"
+              src={assetUrl('/images/svg/soundBorder.svg')}
               className={`
                 absolute inset-0.5 w-[calc(100%-4px)] h-[calc(100%-4px)] object-contain transition-transform duration-500 group-hover:rotate-180
                 ${isDark ? '' : 'invert opacity-70'}

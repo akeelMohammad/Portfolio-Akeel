@@ -1,6 +1,6 @@
 {
-  "name": "Remix Noomo - The Power of Digital Storytelling",
-  "description": "An interactive digital storytelling experience with 3D phoenix model, dynamic interactions, and editorial narrative.",
+  "name": "Akeel Mohammad - Digital Portfolio",
+  "description": "Akeel Mohammad's interactive digital portfolio with 3D storytelling, dynamic interactions, and selected projects.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

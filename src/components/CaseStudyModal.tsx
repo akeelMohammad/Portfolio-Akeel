@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CaseStudyData } from '../data/cases';
 import { soundManager } from '../utils/audio';
+import { assetUrl } from '../utils/assetUrl';
 
 interface CaseStudyModalProps {
   caseData: CaseStudyData;
@@ -124,7 +125,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
         <div
           className="absolute inset-0 opacity-20 mix-blend-screen transition-transform duration-700"
           style={{
-            backgroundImage: `url(/textures/crystals/${caseData.crystalIndex}.jpg)`,
+            backgroundImage: `url(${assetUrl(`/textures/crystals/${caseData.crystalIndex}.jpg`)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             transform: `scale(1.08) translate3d(${(pointerOffset.x * -10).toFixed(1)}px, ${(
@@ -138,7 +139,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
           className="absolute inset-0 pointer-events-none transition-opacity duration-500 mix-blend-screen"
           style={{
             opacity: Math.min(0.88, iceTransition * 0.82),
-            backgroundImage: 'url(/textures/ice.jpg)',
+            backgroundImage: `url(${assetUrl('/textures/ice.jpg')})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             transform: `scale(${(1.02 + iceTransition * 0.08).toFixed(3)}) translate3d(${(
@@ -153,7 +154,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
           className="absolute inset-0 pointer-events-none transition-opacity duration-500 mix-blend-overlay"
           style={{
             opacity: Math.min(0.6, iceTransition * 0.55),
-            backgroundImage: 'url(/textures/iced.jpg)',
+            backgroundImage: `url(${assetUrl('/textures/iced.jpg')})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -234,7 +235,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
                     </span>
                     <img
                       alt=""
-                      src="/images/svg/tagsStar.svg"
+                      src={assetUrl('/images/svg/tagsStar.svg')}
                       className="w-2.5 h-2.5 opacity-80"
                     />
                   </div>
@@ -274,7 +275,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
                   >
                     <img
                       alt="star"
-                      src="/images/svg/tagsStar.svg"
+                      src={assetUrl('/images/svg/tagsStar.svg')}
                       className="w-[8px] h-[8px] sm:w-[10px] sm:h-[10px] object-contain shrink-0"
                     />
                     <span>{tag}</span>
@@ -296,7 +297,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
                 <div className="gradient-2 rounded-full" />
                 <img
                   alt="star"
-                  src="/images/svg/newStar.svg"
+                  src={assetUrl('/images/svg/newStar.svg')}
                   className="mr-[6px] w-[14px] h-[14px] relative z-10"
                 />
                 <div
@@ -352,12 +353,12 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
                 <div className="gradient-2 rounded-full" />
                 <img
                   alt="circle"
-                  src="/images/svg/cursor_border.svg"
+                  src={assetUrl('/images/svg/cursor_border.svg')}
                   className="w-[38px] h-[38px] sm:w-[51px] sm:h-[51px] absolute top-1 left-1 object-contain border-circle"
                 />
                 <img
                   alt="Back arrow"
-                  src="/images/svg/backArrowNew.svg"
+                  src={assetUrl('/images/svg/backArrowNew.svg')}
                   className="rotate-180 relative z-10 w-3 h-3 sm:w-3.5 sm:h-3.5"
                 />
                 <div className="bb" />
@@ -406,12 +407,12 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
                 <div className="gradient-2 rounded-full" />
                 <img
                   alt="circle"
-                  src="/images/svg/cursor_border.svg"
+                  src={assetUrl('/images/svg/cursor_border.svg')}
                   className="w-[38px] h-[38px] sm:w-[51px] sm:h-[51px] absolute top-1 left-1 object-contain border-circle"
                 />
                 <img
                   alt="Next arrow"
-                  src="/images/svg/backArrowNew.svg"
+                  src={assetUrl('/images/svg/backArrowNew.svg')}
                   className="relative z-10 w-3 h-3 sm:w-3.5 sm:h-3.5"
                 />
                 <div className="bb" />
