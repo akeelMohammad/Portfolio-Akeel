@@ -1,0 +1,8 @@
+{
+  "name": "Remix Noomo - The Power of Digital Storytelling",
+  "description": "An interactive digital storytelling experience with 3D phoenix model, dynamic interactions, and editorial narrative.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

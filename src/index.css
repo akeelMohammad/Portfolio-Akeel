@@ -1,0 +1,392 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'TheSeasons';
+  src: local('Plus Jakarta Sans'), local('Inter'), sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TTNeoris';
+  src: url('/fonts/TTNeorisTrialRegular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --font-serif: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'TTNeoris', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-brand-black: #020612;
+  --color-brand-purple: #E5DDF9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: #E5DDF9;
+  color: #020612;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-seasons {
+  font-family: var(--font-display);
+  font-style: normal;
+  letter-spacing: -0.02em;
+}
+
+i.font-seasons {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.font-neoris {
+  font-family: var(--font-sans);
+}
+
+.home-hero h1 {
+  color: #fdebfd;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, min(8.6vw, 13.5vh), 7.8rem);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+  margin-bottom: clamp(1rem, 2vw, 2.5rem);
+  text-align: center;
+  white-space: nowrap;
+  transform: translate(clamp(1.5vw, 6vw, 10vw));
+  overflow: visible;
+}
+
+.home-hero h1 .char {
+  background: linear-gradient(180deg, #fffcff 0 25%, #e3f0ff 65% 80%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #000;
+  margin-top: -0.1em;
+  margin-bottom: -0.38em;
+  margin-left: -0.02em;
+  padding: 0.1em 0.05em 0.38em 0.05em;
+  display: inline-block;
+  overflow: visible;
+  vertical-align: baseline;
+}
+
+.home-hero h2 {
+  font-size: clamp(1.15rem, min(4.2vw, 4.8vh), 3.8rem);
+  margin-bottom: clamp(-2.2rem, -2.8vw, -1rem);
+  margin-left: clamp(2vw, 5.5vw, 6.5vw);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.home-hero h2 span {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Fluid responsive typography helpers — scale smoothly with vw and vh, never wrap */
+.fluid-title-xl {
+  font-size: clamp(1.5rem, min(4.2vw, 5vh), 4.1rem);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.fluid-title-lg {
+  font-size: clamp(1.2rem, min(3.3vw, 4vh), 3.2rem);
+  line-height: 1.16;
+  white-space: nowrap;
+}
+
+.fluid-title-md {
+  font-size: clamp(1rem, min(2.5vw, 3.2vh), 2.4rem);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.fluid-body-lg {
+  font-size: clamp(0.78rem, min(1.55vw, 2.2vh), 1.4rem);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.fluid-body-sm {
+  font-size: clamp(0.68rem, min(1.2vw, 1.8vh), 1.1rem);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+/* Gradients and lines */
+.text-line {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 22.12%, #fff 50%, rgba(255,255,255,0));
+  display: block !important;
+  height: 2px;
+  line-height: 0;
+  width: 100%;
+}
+
+.text-line.half {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 4.33%, #fff 78.37%, rgba(255,255,255,0));
+}
+
+.text-line.dark {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 50%, rgba(255,255,255,0) 100%);
+}
+
+.cases-text-line {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 4.33%, #fff 78.37%, rgba(255,255,255,0));
+  display: block !important;
+  height: 2px;
+  line-height: 0;
+  width: 100%;
+}
+
+.gradient-text {
+  background: linear-gradient(180deg, #FFFFFF 0%, #D8C3F7 60%, #87A5F8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-top: 0.15em;
+  padding-bottom: 0.15em;
+  padding-left: 0.1em;
+  padding-right: 0.15em;
+  margin-top: -0.15em;
+  margin-bottom: -0.15em;
+  margin-left: -0.1em;
+  margin-right: -0.15em;
+  display: inline-block;
+  overflow: visible;
+}
+
+.gradient-text-big {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, min(9.5vw, 14vh), 8.5rem);
+  font-weight: 800;
+  font-style: normal;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  overflow: visible;
+  padding: 0.1em 0.25em;
+  margin: 0 auto;
+}
+
+.lines-text-gradient {
+  background: linear-gradient(90deg, #fff, #cbdcffbf 92.49%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: #000;
+  -webkit-text-fill-color: transparent;
+}
+
+.lines-text-gradient-left {
+  background: linear-gradient(269.6deg, #fff -2.04%, #cbdcffbf 99.62%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: #000;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Reimagine Phoenix Button */
+.release-spirit-btn {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.release-spirit-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Preloader mask effect */
+.preloader-bg {
+  background: linear-gradient(45deg, #cebdf8, #E5DDF9);
+}
+
+@keyframes logoDrawA {
+  0% {
+    stroke-dashoffset: 3000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes logoDrawM {
+  0% {
+    stroke-dashoffset: 3350;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes logoGlowPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.3));
+  }
+  50% {
+    transform: scale(1.025);
+    filter: drop-shadow(0 0 16px rgba(124, 58, 237, 0.55));
+  }
+}
+
+@keyframes soundWave {
+  0% {
+    height: 2px;
+  }
+  100% {
+    height: 10px;
+  }
+}
+
+/* Exact Crystal Case Study Storytelling styles from _slug_.DjiABMH0.css */
+.view-case-button .gradient-1,
+.next-prev-cases .mobile-next .gradient-1,
+.next-prev-cases .mobile-prev .gradient-1 {
+  background:
+    linear-gradient(0deg, #ffffff05, #ffffff05),
+    radial-gradient(27.8% 27.8% at 12.89% 16.15%, #eabdf61a 0, #eabdf600),
+    radial-gradient(24.84% 24.84% at 80.75% 88.98%, #eabdf633 0, #eabdf600);
+}
+
+.view-case-button .gradient-2,
+.next-prev-cases .mobile-next .gradient-2,
+.next-prev-cases .mobile-prev .gradient-2 {
+  background:
+    linear-gradient(0deg, #ffffff14, #ffffff14),
+    radial-gradient(27.8% 27.8% at 12.89% 16.15%, #eabdf633 0, #eabdf600),
+    radial-gradient(24.84% 24.84% at 80.75% 88.98%, #eabdf633 0, #eabdf600);
+}
+
+.view-case-button .bb,
+.next-prev-cases .mobile-next .bb,
+.next-prev-cases .mobile-prev .bb {
+  border-radius: 9999px;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  --border-width: 1px;
+  --radius: 100px;
+  padding: 0.1rem;
+  pointer-events: none;
+}
+
+.view-case-button .bb::before,
+.next-prev-cases .mobile-next .bb::before,
+.next-prev-cases .mobile-prev .bb::before {
+  background: linear-gradient(90deg, #fff 0, transparent 35%, #fff 65%, transparent);
+}
+
+.view-case-button .bb::before,
+.view-case-button .bb::after,
+.next-prev-cases .mobile-next .bb::before,
+.next-prev-cases .mobile-next .bb::after,
+.next-prev-cases .mobile-prev .bb::before,
+.next-prev-cases .mobile-prev .bb::after {
+  border-radius: var(--radius);
+  content: "";
+  inset: 0;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: var(--border-width);
+  position: absolute;
+  transition: 0.4s ease-in-out;
+}
+
+.view-case-button .bb::after,
+.next-prev-cases .mobile-next .bb::after,
+.next-prev-cases .mobile-prev .bb::after {
+  background: linear-gradient(270deg, #fff 0, transparent 35%, #fff 65%, transparent);
+  opacity: 0;
+}
+
+.view-case-button:hover .bb::before,
+.next-prev-cases .nav-button:hover .bb::before {
+  opacity: 0;
+}
+
+.view-case-button:hover .bb::after,
+.next-prev-cases .nav-button:hover .bb::after {
+  opacity: 1;
+}
+
+.cases-text p {
+  margin-bottom: 26px;
+}
+
+.cases-text .text-serif-50 {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.next-prev-cases .cases-text-line-prev {
+  transform: translate(200px);
+}
+
+.next-prev-cases .cases-text-line-next {
+  transform: translate(-200px);
+}
+
+.next-prev-cases .nav-button:hover .cases-text-line-next,
+.next-prev-cases .nav-button:hover .cases-text-line-prev {
+  transform: translate(0) !important;
+  width: 400px !important;
+}
+
+.next-prev-cases .nav-button:hover .border-circle {
+  transform: rotate(180deg);
+}
+
+.vignette-bottom-safari {
+  background: linear-gradient(180deg, transparent, #000);
+}
+
+/* Industry Experience Parallel Crystal Prisms — matches Noomo 3D crystal shader & frost veins */
+.industry-crystal-prism-left {
+  clip-path: polygon(22% 4%, 64% 0%, 93% 14%, 100% 52%, 85% 90%, 48% 100%, 11% 91%, 0% 54%);
+}
+
+.industry-crystal-prism-right {
+  clip-path: polygon(36% 0%, 78% 4%, 100% 46%, 89% 91%, 52% 100%, 15% 90%, 0% 52%, 7% 14%);
+}
+
+.industry-crystal-surface {
+  background:
+    radial-gradient(circle at 50% 52%, rgba(39, 44, 78, 0.42) 0%, rgba(39, 44, 78, 0.16) 46%, rgba(255, 255, 255, 0) 74%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(226, 231, 245, 0.88) 45%, rgba(198, 206, 228, 0.92) 100%);
+  box-shadow:
+    inset 0 2px 12px rgba(255, 255, 255, 0.95),
+    inset 0 -10px 28px rgba(120, 130, 168, 0.35),
+    0 24px 60px -15px rgba(39, 44, 78, 0.28);
+}
+
+/* Custom scroll hide */
+::-webkit-scrollbar {
+  display: none;
+}
+html {
+  scrollbar-width: none;
+}
+
+
