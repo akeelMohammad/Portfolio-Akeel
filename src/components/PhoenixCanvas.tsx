@@ -118,9 +118,13 @@ function getRenderQuality(): RenderQuality {
   return {
     isMobile,
     isLowPower,
-    pixelRatio: Math.min(window.devicePixelRatio || 1, isMobile || isLowPower ? 1.5 : 2),
-    renderScale: isLowPower ? 0.85 : 1,
-    targetFrameInterval: isReducedMotion ? 50 : isLowPower ? 33 : 0,
+    // Keep the canvas sharp without allowing 2x/3x DPR displays to multiply
+    // the full-screen glass shader cost.
+    pixelRatio: Math.min(window.devicePixelRatio || 1, isMobile || isLowPower ? 1.25 : 1.5),
+    renderScale: isLowPower ? 0.72 : 0.82,
+    // The scene is scroll-driven, so rendering above 30fps only wastes GPU
+    // while the browser is compositing the same visual state.
+    targetFrameInterval: isReducedMotion ? 100 : isLowPower ? 50 : 33,
   };
 }
 
@@ -417,6 +421,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       side: THREE.DoubleSide,
       depthWrite: !isSoftwareGl,
     });
+    phoenixGlassMaterial.forceSinglePass = true;
 
     phoenixGlassMaterial.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, glassUniforms);
@@ -776,6 +781,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
         opacity: isSoftwareGl ? 0.86 : 0.96,
         depthWrite: false,
       });
+      crystalMat.forceSinglePass = true;
       crystalMaterials.push(crystalMat);
 
       // 1. Immediate Procedural Faceted Crystal Placeholder (guarantees zero missing models & instant raycasting)
@@ -948,6 +954,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     isDisposed = false;
     let lastCrystalEmitTime = 0;
     let lastFrameTime = 0;
+    let isPageVisible = document.visibilityState === 'visible';
 
     // Reusable objects for zero-allocation frame loop
     const camPosVec = new THREE.Vector3(-34.448, 0, 0);
@@ -961,7 +968,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     const crystalNdc = new THREE.Vector3();
 
     const animate = (now = performance.now()) => {
-      if (isDisposed) return;
+      if (isDisposed || !isPageVisible) return;
 
       const targetFrameInterval = isSoftwareGl
         ? 140
@@ -1277,6 +1284,19 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       frameId = requestAnimationFrame(animate);
     };
 
+    const handleVisibilityChange = () => {
+      isPageVisible = document.visibilityState === 'visible';
+      if (isPageVisible) {
+        clock.start();
+        lastFrameTime = 0;
+        frameId = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(frameId);
+        clock.stop();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     frameId = requestAnimationFrame(animate);
 
     return () => {
@@ -1286,6 +1306,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('click', handleClick);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       dracoLoader.dispose();
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
