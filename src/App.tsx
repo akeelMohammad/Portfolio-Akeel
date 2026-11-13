@@ -21,6 +21,7 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [reimagineTrigger, setReimagineTrigger] = useState(0);
   const [experienceStarted, setExperienceStarted] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const [crystalPositions, setCrystalPositions] = useState<
     Record<string, CrystalScreenPos>
   >({});
@@ -164,7 +165,10 @@ export default function App() {
       }`}
     >
       {/* Preloader */}
-      <Preloader onStart={() => setExperienceStarted(true)} />
+      <Preloader
+        sceneReady={sceneReady}
+        onStart={() => setExperienceStarted(true)}
+      />
 
       {/* Custom Follower Cursor */}
       <CustomCursor hoveredCase={isHome ? hoveredCase : null} />
@@ -188,6 +192,7 @@ export default function App() {
         onSelectCase={handleSelectCase}
         onHoverCase={setHoveredCase}
         onCrystalPositionsChange={setCrystalPositions}
+        onReady={() => setSceneReady(true)}
       />
 
       {/* Home View Overlays */}

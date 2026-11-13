@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { soundManager } from '../utils/audio';
 import { LogoPathAnimation } from './LogoPathAnimation';
 
 interface PreloaderProps {
   onStart: () => void;
+  sceneReady: boolean;
 }
 
-export const Preloader: React.FC<PreloaderProps> = ({ onStart }) => {
+export const Preloader: React.FC<PreloaderProps> = ({ onStart, sceneReady }) => {
   const [revealed, setRevealed] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [started, setStarted] = useState(false);
+  const revealStartedRef = useRef(false);
 
   useEffect(() => {
     // Check for autostart query param (Ultra Mode requirement)
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('autostart') === '1') {
-        handleStart();
+        requestStart();
       }
     }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
-        handleStart();
+        requestStart();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [sceneReady]);
 
-  const handleStart = () => {
+  const reveal = () => {
+    if (revealStartedRef.current) return;
+    revealStartedRef.current = true;
     soundManager.setSound(true);
     soundManager.playHover();
     setRevealed(true);
@@ -37,15 +42,26 @@ export const Preloader: React.FC<PreloaderProps> = ({ onStart }) => {
     }, 800);
   };
 
+  const requestStart = () => {
+    setStarted(true);
+    if (sceneReady) reveal();
+  };
+
+  useEffect(() => {
+    if (started && sceneReady && !revealed) {
+      reveal();
+    }
+  }, [sceneReady, started, revealed]);
+
   if (hidden) return null;
 
   return (
     <div
       role="button"
       tabIndex={0}
-      onClick={handleStart}
+      onClick={requestStart}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') handleStart();
+        if (e.key === 'Enter' || e.key === ' ') requestStart();
       }}
       className={`fixed inset-0 z-50 flex flex-col justify-center items-center cursor-pointer select-none transition-all duration-700 ease-in-out preloader-bg ${
         revealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100'
@@ -68,7 +84,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onStart }) => {
         {/* Previous Click to Start Button Design */}
         <div className="flex items-center gap-2 px-5 py-2 rounded-full border border-black/20 bg-white/30 backdrop-blur-md">
           <span className="text-[15px] font-medium tracking-wide text-neutral-900">
-            Click to start
+            {started && !sceneReady ? 'Preparing experience...' : 'Click to start'}
           </span>
         </div>
       </div>

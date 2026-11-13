@@ -21,6 +21,7 @@ interface PhoenixCanvasProps {
   onSelectCase?: (slug: string) => void;
   onHoverCase?: (caseItem: CaseStudyData | null) => void;
   onCrystalPositionsChange?: (positions: Record<string, CrystalScreenPos>) => void;
+  onReady?: () => void;
 }
 
 // Exact skeletal animation clip mapping from X.settings.glassAnimationIdToClipName in CbdjwYMp.js
@@ -176,6 +177,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
   onSelectCase,
   onHoverCase,
   onCrystalPositionsChange,
+  onReady,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef(scrollProgress);
@@ -183,6 +185,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
   const onSelectCaseRef = useRef(onSelectCase);
   const onHoverCaseRef = useRef(onHoverCase);
   const onCrystalPositionsRef = useRef(onCrystalPositionsChange);
+  const onReadyRef = useRef(onReady);
 
   // Reimagine Phoenix color override state (mirrors class T0 & nne in CbdjwYMp.js)
   const customColorStateRef = useRef<{
@@ -214,6 +217,10 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
   useEffect(() => {
     onCrystalPositionsRef.current = onCrystalPositionsChange;
   }, [onCrystalPositionsChange]);
+
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
 
   // Trigger exact HSL randomization from class nne in CbdjwYMp.js when "Reimagine Phoenix" is clicked
   useEffect(() => {
@@ -566,6 +573,20 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
 
     let camTimeline: TimelineController | null = null;
     let devTimeline: TimelineController | null = null;
+    let criticalAssetsLoaded = 0;
+    let criticalReady = false;
+    let deferredAssetsStarted = false;
+    let startDeferredAssets = () => {};
+
+    const markCriticalAssetLoaded = () => {
+      criticalAssetsLoaded++;
+      if (criticalAssetsLoaded === 3) {
+        criticalReady = true;
+        onReadyRef.current?.();
+        startDeferredAssets();
+        frameId = requestAnimationFrame(animate);
+      }
+    };
 
     safeLoadGLTF(
       assetUrl(renderQuality.isMobile ? '/timelines/cam-mob.glb' : '/timelines/cam.glb'),
@@ -573,14 +594,17 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       camTimeline = buildTimelineController(gltf);
       const initT = scrollProgressToTimelineSeconds(scrollRef.current);
       seekTimelineController(camTimeline, initT);
-      }
+      markCriticalAssetLoaded();
+      },
+      markCriticalAssetLoaded
     );
 
     safeLoadGLTF(assetUrl('/timelines/dev.glb'), (gltf) => {
       devTimeline = buildTimelineController(gltf);
       const initT = scrollProgressToTimelineSeconds(scrollRef.current);
       seekTimelineController(devTimeline, initT);
-    });
+      markCriticalAssetLoaded();
+    }, markCriticalAssetLoaded);
 
     // Phoenix Container & Skeletal Animation state
     const phoenixGroup = new THREE.Group();
@@ -657,7 +681,8 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
         phoenixMixer = new THREE.AnimationMixer(root);
         selectPhoenixClip(2); // Starts with Wing_CloseUp at t=0
       }
-    });
+      markCriticalAssetLoaded();
+    }, markCriticalAssetLoaded);
 
     // 6. Sun Glow Sprite (matches class hl in CbdjwYMp.js)
     const sunTex = textureLoader.load(assetUrl('/textures/icon.png'), undefined, undefined, () => {});
@@ -693,16 +718,18 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     featherGroup.add(featherGlow);
 
     let featherMesh: THREE.Object3D | null = null;
-    safeLoadGLTF(assetUrl('/models/feather.glb'), (gltf) => {
-      const mesh = gltf.scene;
-      featherMesh = mesh;
-      mesh.traverse((child: THREE.Object3D) => {
-        if ((child as THREE.Mesh).isMesh) {
-          (child as THREE.Mesh).material = phoenixGlassMaterial;
-        }
+    const loadFeather = () => {
+      safeLoadGLTF(assetUrl('/models/feather.glb'), (gltf) => {
+        const mesh = gltf.scene;
+        featherMesh = mesh;
+        mesh.traverse((child: THREE.Object3D) => {
+          if ((child as THREE.Mesh).isMesh) {
+            (child as THREE.Mesh).material = phoenixGlassMaterial;
+          }
+        });
+        featherGroup.add(mesh);
       });
-      featherGroup.add(mesh);
-    });
+    };
 
     // 8. 7 Interactive Case Study Crystals (matches class Jh, function oie & class sie in CbdjwYMp.js)
     const crystalsGroup = new THREE.Group();
@@ -711,6 +738,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
 
     const crystalContainers: THREE.Group[] = [];
     const crystalMaterials: THREE.MeshPhysicalMaterial[] = [];
+    const startCrystalLoads: Array<() => void> = [];
     const crystalHoverProgress: number[] = new Array(7).fill(0);
     let hoveredCrystalIndex: number | null = null;
 
@@ -814,52 +842,62 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       holder.add(placeholderGroup);
 
       // 2. Staggered load to avoid Cloud Run concurrent burst limits (HTTP 429) + automatic exponential backoff
-      setTimeout(() => {
-        if (isDisposed) return;
-        safeLoadGLTF(assetUrl(`/models/crystal${idx}.glb`), (gltf) => {
+      startCrystalLoads.push(() => {
+        window.setTimeout(() => {
           if (isDisposed) return;
-          const model = gltf.scene;
-          model.traverse((child: THREE.Object3D) => {
-            if ((child as THREE.Mesh).isMesh) {
-              const m = child as THREE.Mesh;
-              m.geometry.deleteAttribute('_coverage');
-              m.geometry.deleteAttribute('_numnonpacked');
+          safeLoadGLTF(assetUrl(`/models/crystal${idx}.glb`), (gltf) => {
+            if (isDisposed) return;
+            const model = gltf.scene;
+            model.traverse((child: THREE.Object3D) => {
+              if ((child as THREE.Mesh).isMesh) {
+                const m = child as THREE.Mesh;
+                m.geometry.deleteAttribute('_coverage');
+                m.geometry.deleteAttribute('_numnonpacked');
 
-              // Exact 4-component tangent fix from function oie(n,e,t) in CbdjwYMp.js
-              const tangentAttr = m.geometry.getAttribute('tangent');
-              if (tangentAttr && tangentAttr.itemSize === 4) {
-                const count = tangentAttr.count;
-                const arr = new Float32Array(count * 3);
-                for (let i = 0; i < count; i++) {
-                  arr[i * 3 + 0] = tangentAttr.getX(i);
-                  arr[i * 3 + 1] = tangentAttr.getY(i);
-                  arr[i * 3 + 2] = tangentAttr.getZ(i);
+                // Exact 4-component tangent fix from function oie(n,e,t) in CbdjwYMp.js
+                const tangentAttr = m.geometry.getAttribute('tangent');
+                if (tangentAttr && tangentAttr.itemSize === 4) {
+                  const count = tangentAttr.count;
+                  const arr = new Float32Array(count * 3);
+                  for (let i = 0; i < count; i++) {
+                    arr[i * 3 + 0] = tangentAttr.getX(i);
+                    arr[i * 3 + 1] = tangentAttr.getY(i);
+                    arr[i * 3 + 2] = tangentAttr.getZ(i);
+                  }
+                  m.geometry.setAttribute(
+                    'tangent',
+                    new THREE.BufferAttribute(arr, 3, tangentAttr.normalized)
+                  );
                 }
-                m.geometry.setAttribute(
-                  'tangent',
-                  new THREE.BufferAttribute(arr, 3, tangentAttr.normalized)
-                );
-              }
 
-              if (m.name === 'ConvexHull') {
-                m.material = convexHullMaterial;
-                m.renderOrder = 0;
-              } else if (m.name === 'Icon') {
-                m.material = crystalIconMaterial;
-                m.renderOrder = 1;
-              } else {
-                m.material = crystalMat;
-                m.renderOrder = 2;
+                if (m.name === 'ConvexHull') {
+                  m.material = convexHullMaterial;
+                  m.renderOrder = 0;
+                } else if (m.name === 'Icon') {
+                  m.material = crystalIconMaterial;
+                  m.renderOrder = 1;
+                } else {
+                  m.material = crystalMat;
+                  m.renderOrder = 2;
+                }
+                m.userData = { caseIndex: idx, slug: caseItem.slug };
               }
-              m.userData = { caseIndex: idx, slug: caseItem.slug };
-            }
+            });
+            // Swap out the procedural placeholder with the loaded high-poly GLB
+            holder.remove(placeholderGroup);
+            holder.add(model);
           });
-          // Swap out the procedural placeholder with the loaded high-poly GLB
-          holder.remove(placeholderGroup);
-          holder.add(model);
-        });
-      }, 300 + idx * 220);
+        }, 300 + idx * 220);
+      });
     });
+
+    startDeferredAssets = () => {
+      if (deferredAssetsStarted) return;
+      deferredAssetsStarted = true;
+      loadFeather();
+      startCrystalLoads.forEach((startLoad) => startLoad());
+    };
+    if (criticalReady) startDeferredAssets();
 
     // 9. Atmospheric Sparkle / Ember Particles around Phoenix & Feather
     const particleCount = isSoftwareGl ? 70 : 180;
@@ -968,7 +1006,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     const crystalNdc = new THREE.Vector3();
 
     const animate = (now = performance.now()) => {
-      if (isDisposed || !isPageVisible) return;
+      if (isDisposed || !isPageVisible || !criticalReady) return;
 
       const targetFrameInterval = isSoftwareGl
         ? 140
@@ -1297,7 +1335,9 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    frameId = requestAnimationFrame(animate);
+    if (criticalReady) {
+      frameId = requestAnimationFrame(animate);
+    }
 
     return () => {
       isDisposed = true;
