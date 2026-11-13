@@ -175,6 +175,7 @@ export default function App() {
         currentSection={currentSection}
         onNavigateSection={handleNavigateToSection}
         onGoHome={handleGoHome}
+        showBrand={!activeCaseData}
       />
 
       {/* 3D WebGL Phoenix & Crystal Canvas (driven by /timelines/cam.glb & /timelines/dev.glb) */}

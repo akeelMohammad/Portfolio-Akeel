@@ -9,6 +9,7 @@ interface HeaderProps {
   currentSection?: SectionId | null;
   onNavigateSection: (section: SectionId) => void;
   onGoHome: () => void;
+  showBrand?: boolean;
 }
 
 interface NavItem {
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentSection,
   onNavigateSection,
   onGoHome,
+  showBrand = true,
 }) => {
   const [isMuted, setIsMuted] = useState(soundManager.muted);
   const [isHoverLogo, setIsHoverLogo] = useState(false);
@@ -62,47 +64,49 @@ export const Header: React.FC<HeaderProps> = ({
     >
       <div className="max-w-[1440px] mx-auto flex justify-between items-center px-[4vw]">
         {/* Brand Logo + Name */}
-        <a
-          href="/"
-          aria-label="Akeel Mohammad"
-          onClick={(e) => {
-            e.preventDefault();
-            soundManager.playHover();
-            setMobileMenuOpen(false);
-            onGoHome();
-          }}
-          onMouseEnter={() => {
-            setIsHoverLogo(true);
-            soundManager.playHover();
-          }}
-          onMouseLeave={() => setIsHoverLogo(false)}
-          className="relative flex items-center py-1.5 cursor-pointer transition-transform duration-300 hover:scale-105 shrink-0 whitespace-nowrap"
-          style={{ gap: 'clamp(0.45rem, 1vw, 0.85rem)' }}
-        >
-          <div
-            className={`relative flex items-center justify-center shrink-0 transition-transform duration-300 ${
-              isHoverLogo ? 'scale-105' : ''
-            }`}
-            style={{
-              width: 'clamp(2.2rem, 3.6vw, 3.4rem)',
-              height: 'clamp(1.1rem, 1.8vw, 1.65rem)',
+        {showBrand && (
+          <a
+            href="/"
+            aria-label="Akeel Mohammad"
+            onClick={(e) => {
+              e.preventDefault();
+              soundManager.playHover();
+              setMobileMenuOpen(false);
+              onGoHome();
             }}
+            onMouseEnter={() => {
+              setIsHoverLogo(true);
+              soundManager.playHover();
+            }}
+            onMouseLeave={() => setIsHoverLogo(false)}
+            className="relative flex items-center py-1.5 cursor-pointer transition-transform duration-300 hover:scale-105 shrink-0 whitespace-nowrap"
+            style={{ gap: 'clamp(0.45rem, 1vw, 0.85rem)' }}
           >
-            <img
-              alt="AM Logo"
-              src={assetUrl(isDark ? '/images/logoAmLight.png' : '/images/logoAmDark.png')}
-              className="h-full w-auto object-contain transition-opacity duration-300"
-            />
-          </div>
-          <span
-            className={`font-normal tracking-tight transition-colors duration-300 whitespace-nowrap ${
-              isDark ? 'text-white' : 'text-[#020612]'
-            }`}
-            style={{ fontSize: 'clamp(0.85rem, 1.35vw, 1.25rem)' }}
-          >
-            Akeel Mohammad
-          </span>
-        </a>
+            <div
+              className={`relative flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                isHoverLogo ? 'scale-105' : ''
+              }`}
+              style={{
+                width: 'clamp(2.2rem, 3.6vw, 3.4rem)',
+                height: 'clamp(1.1rem, 1.8vw, 1.65rem)',
+              }}
+            >
+              <img
+                alt="AM Logo"
+                src={assetUrl(isDark ? '/images/logoAmLight.png' : '/images/logoAmDark.png')}
+                className="h-full w-auto object-contain transition-opacity duration-300"
+              />
+            </div>
+            <span
+              className={`font-normal tracking-tight transition-colors duration-300 whitespace-nowrap ${
+                isDark ? 'text-white' : 'text-[#020612]'
+              }`}
+              style={{ fontSize: 'clamp(0.85rem, 1.35vw, 1.25rem)' }}
+            >
+              Akeel Mohammad
+            </span>
+          </a>
+        )}
 
         {/* Section Links Navigation & Controls */}
         <div
