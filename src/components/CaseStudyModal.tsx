@@ -108,6 +108,28 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
         }}
       />
 
+      {/* Persistent project exit control for users who have not reached the bottom navigation. */}
+      <button
+        type="button"
+        onClick={handleBackToProjects}
+        onMouseEnter={() => soundManager.playHover()}
+        disabled={isTransitioningOut}
+        aria-label="Back to all projects"
+        className="fixed left-[5vw] top-[clamp(1.1rem,3vh,2rem)] z-40 flex items-center gap-2 rounded-full border border-white/35 bg-white/10 px-3 py-2 text-white/90 backdrop-blur-md transition-colors duration-300 hover:border-white/70 hover:bg-white/20 disabled:pointer-events-none disabled:opacity-60 sm:gap-2.5 sm:px-4 sm:py-2.5"
+      >
+        <img
+          alt=""
+          src={assetUrl('/images/svg/backArrowNew.svg')}
+          className="h-3 w-3 rotate-180 sm:h-3.5 sm:w-3.5"
+        />
+        <span
+          className="font-normal tracking-tight"
+          style={{ fontSize: 'clamp(0.72rem, 0.9vw, 0.9rem)' }}
+        >
+          Back to projects
+        </span>
+      </button>
+
       {/* Fixed Crystalline Ice Refraction Backdrop (matches App.settings.iceTransition in CbdjwYMp.js) */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Ambient Crystalline Glow Orbs tuned to project's exact crystal hover palette */}
