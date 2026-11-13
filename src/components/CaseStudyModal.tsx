@@ -115,7 +115,11 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
         onMouseEnter={() => soundManager.playHover()}
         disabled={isTransitioningOut}
         aria-label="Back to all projects"
-        className="fixed left-[5vw] top-[clamp(1.1rem,3vh,2rem)] z-40 flex items-center gap-2 rounded-full border border-white/35 bg-white/10 px-3 py-2 text-white/90 backdrop-blur-md transition-colors duration-300 hover:border-white/70 hover:bg-white/20 disabled:pointer-events-none disabled:opacity-60 sm:gap-2.5 sm:px-4 sm:py-2.5"
+        className="fixed z-40 flex max-w-[calc(100vw-1.5rem)] items-center gap-1.5 whitespace-nowrap rounded-full border border-white/35 bg-white/10 px-2.5 py-1.5 text-white/90 backdrop-blur-md transition-colors duration-300 hover:border-white/70 hover:bg-white/20 disabled:pointer-events-none disabled:opacity-60 sm:gap-2.5 sm:px-4 sm:py-2.5"
+        style={{
+          left: 'clamp(0.75rem, 5vw, 4.5rem)',
+          top: 'clamp(0.75rem, 3vh, 2rem)',
+        }}
       >
         <img
           alt=""

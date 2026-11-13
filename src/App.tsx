@@ -169,14 +169,16 @@ export default function App() {
       {/* Custom Follower Cursor */}
       <CustomCursor hoveredCase={isHome ? hoveredCase : null} />
 
-      {/* Header */}
-      <Header
-        theme={effectiveTheme}
-        currentSection={currentSection}
-        onNavigateSection={handleNavigateToSection}
-        onGoHome={handleGoHome}
-        showBrand={!activeCaseData}
-      />
+      {/* Keep the project view focused on its own navigation controls. */}
+      {!activeCaseData && (
+        <Header
+          theme={effectiveTheme}
+          currentSection={currentSection}
+          onNavigateSection={handleNavigateToSection}
+          onGoHome={handleGoHome}
+          showBrand={!activeCaseData}
+        />
+      )}
 
       {/* 3D WebGL Phoenix & Crystal Canvas (driven by /timelines/cam.glb & /timelines/dev.glb) */}
       <PhoenixCanvas
