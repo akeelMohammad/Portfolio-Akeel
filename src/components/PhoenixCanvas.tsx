@@ -187,6 +187,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
   const onHoverCaseRef = useRef(onHoverCase);
   const onCrystalPositionsRef = useRef(onCrystalPositionsChange);
   const onReadyRef = useRef(onReady);
+  const crystalScreenPositionsRef = useRef<Record<string, CrystalScreenPos>>({});
 
   // Reimagine Phoenix color override state (mirrors class T0 & nne in CbdjwYMp.js)
   const customColorStateRef = useRef<{
@@ -846,7 +847,8 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       startCrystalLoads.push(() => {
         window.setTimeout(() => {
           if (isDisposed) return;
-          safeLoadGLTF(assetUrl(`/models/crystal${idx}.glb`), (gltf) => {
+          const modelIndex = idx === 7 ? 6 : idx;
+          safeLoadGLTF(assetUrl(`/models/crystal${modelIndex}.glb`), (gltf) => {
             if (isDisposed) return;
             const model = gltf.scene;
             model.traverse((child: THREE.Object3D) => {
@@ -944,12 +946,20 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
           }
           const hitIndex = obj?.userData?.caseIndex;
           if (typeof hitIndex === 'number') {
-            if (hoveredCrystalIndex !== hitIndex) {
-              hoveredCrystalIndex = hitIndex;
-              soundManager.playHover();
-              onHoverCaseRef.current?.(CASE_STUDIES[hitIndex]);
+            const projected = crystalScreenPositionsRef.current[`crystal${hitIndex}`];
+            if (projected?.visible) {
+              const dx = (projected.x - e.clientX / window.innerWidth) * window.innerWidth;
+              const dy = (projected.y - (1 - e.clientY / window.innerHeight)) * window.innerHeight;
+              const hoverRadius = window.matchMedia('(max-width: 767px)').matches ? 72 : 110;
+              if (Math.hypot(dx, dy) <= hoverRadius) {
+                if (hoveredCrystalIndex !== hitIndex) {
+                  hoveredCrystalIndex = hitIndex;
+                  soundManager.playHover();
+                  onHoverCaseRef.current?.(CASE_STUDIES[hitIndex]);
+                }
+                return;
+              }
             }
-            return;
           }
         }
         if (hoveredCrystalIndex !== null) {
@@ -1248,8 +1258,8 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
                 holder.scale.copy(projNode.scale);
               } else if (i === 7 && cn.project6) {
                 holder.position.copy(cn.project6.position);
-                holder.position.x += 1.35;
-                holder.position.y -= 0.18;
+                holder.position.x += 1.8;
+                holder.position.y += 0.45;
                 holder.quaternion.copy(cn.project6.quaternion);
                 holder.scale.copy(cn.project6.scale).multiplyScalar(0.82);
               } else {
@@ -1296,6 +1306,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
 
           if (elapsed - lastCrystalEmitTime > 0.05) {
             lastCrystalEmitTime = elapsed;
+            crystalScreenPositionsRef.current = screenPositions;
             onCrystalPositionsRef.current?.(screenPositions);
           }
         }
