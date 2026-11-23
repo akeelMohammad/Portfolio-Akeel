@@ -297,7 +297,7 @@ export const StoryChapters: React.FC<StoryChaptersProps> = ({
     },
   ];
 
-  // Exact 7 Crystal Project windows synchronized with project0..project6 in cam.glb (t=17.17..17.70)
+  // Crystal project windows synchronized with project0..project6 in cam.glb, plus the external portfolio project.
   const crystalWindows: Array<[number, number]> = [
     [e(16) + 185, e(16) + 440], // crystal0 (t=17.17..17.40): Coco Care
     [e(16) + 295, e(16) + 515], // crystal1 (t=17.27..17.47): Keeper Mobile
@@ -306,6 +306,7 @@ export const StoryChapters: React.FC<StoryChaptersProps> = ({
     [e(16) + 475, e(16) + 660], // crystal4 (t=17.43..17.60): LumoSense IoT
     [e(16) + 550, e(16) + 735], // crystal5 (t=17.50..17.67): Firefox Focus UX
     [e(16) + 585, e(16) + 775], // crystal6 (t=17.53..17.70): BOC Smart Banking
+    [e(16) + 650, e(16) + 840], // external project: Graphic Design Portfolio
   ];
 
   return (
@@ -985,7 +986,7 @@ export const StoryChapters: React.FC<StoryChaptersProps> = ({
         </div>
       </div>
 
-      {/* 7 Interactive Crystal Project Labels (synchronized with project0..project6 in cam.glb) */}
+      {/* Interactive Crystal Project Labels (including the external graphic design portfolio) */}
       {CASE_STUDIES.map((cs, idx) => {
         const [wStart, wEnd] = crystalWindows[idx] || [e(16) + 185, e(16) + 440];
         if (!isWindowActive(wStart, wStart + 35, wStart, wEnd)) return null;

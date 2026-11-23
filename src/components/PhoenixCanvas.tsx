@@ -775,7 +775,7 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       colorWrite: false,
     });
 
-    CASE_STUDIES.forEach((caseItem, idx) => {
+    CASE_STUDIES.slice(0, 7).forEach((caseItem, idx) => {
       const holder = new THREE.Group();
       holder.userData = { caseIndex: idx, slug: caseItem.slug };
       crystalsGroup.add(holder);
