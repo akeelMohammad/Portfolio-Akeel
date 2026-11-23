@@ -45,6 +45,7 @@ const CRYSTAL_HOVER_COLORS: Array<{
   { base: 13360601, peaks: 16371685, fringe: 13489115 },
   { base: 5168111, peaks: 12763391, fringe: 16579836 },
   { base: 14082556, peaks: 16508551, fringe: 12778185 },
+  { base: 16756986, peaks: 15196927, fringe: 14082556 },
 ];
 
 // Exact GlassSorter back-to-front render order from class Jte in CbdjwYMp.js
@@ -775,14 +776,14 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
       colorWrite: false,
     });
 
-    CASE_STUDIES.slice(0, 7).forEach((caseItem, idx) => {
+    CASE_STUDIES.forEach((caseItem, idx) => {
       const holder = new THREE.Group();
       holder.userData = { caseIndex: idx, slug: caseItem.slug };
       crystalsGroup.add(holder);
       crystalContainers.push(holder);
 
       const normalMap = textureLoader.load(
-        assetUrl(`/textures/crystals/${idx}.jpg`),
+        assetUrl(`/textures/crystals/${idx < 7 ? idx : 6}.jpg`),
         undefined,
         undefined,
         () => {}
@@ -1234,16 +1235,26 @@ export const PhoenixCanvas: React.FC<PhoenixCanvasProps> = ({
           }
         }
 
-        // 7 Crystal Case Study positions, rotations, scales & 2D viewport projections (matches class Jh in CbdjwYMp.js)
+        // 8 Crystal Case Study positions, rotations, scales & 2D viewport projections (matches class Jh in CbdjwYMp.js)
         if (crystalsGroup.visible) {
           const screenPositions: Record<string, CrystalScreenPos> = {};
           for (let i = 0; i < crystalContainers.length; i++) {
             const projNode = cn[`project${i}`];
             const holder = crystalContainers[i];
-            if (projNode && holder) {
-              holder.position.copy(projNode.position);
-              holder.quaternion.copy(projNode.quaternion);
-              holder.scale.copy(projNode.scale);
+            if (holder) {
+              if (projNode) {
+                holder.position.copy(projNode.position);
+                holder.quaternion.copy(projNode.quaternion);
+                holder.scale.copy(projNode.scale);
+              } else if (i === 7 && cn.project6) {
+                holder.position.copy(cn.project6.position);
+                holder.position.x += 1.35;
+                holder.position.y -= 0.18;
+                holder.quaternion.copy(cn.project6.quaternion);
+                holder.scale.copy(cn.project6.scale).multiplyScalar(0.82);
+              } else {
+                continue;
+              }
 
               const isHovered = hoveredCrystalIndex === i;
               crystalHoverProgress[i] +=

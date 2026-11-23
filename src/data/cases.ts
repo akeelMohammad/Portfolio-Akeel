@@ -215,7 +215,7 @@ export const CASE_STUDIES: CaseStudyData[] = [
     ],
     externalLink:
       'https://drive.google.com/file/d/1vl6lmmu0ZdxkU6TJbH6Bbx-ygaml02o6/view?usp=sharing',
-    buttonText: 'View Project',
+    buttonText: 'Project',
     videoUrl: 'https://storytelling.noomoagency.com/videos/cases/LabsCase.mp4',
     accentColor: '#cbdd99',
     categoryBadge: 'CRYSTAL 05 · EMBEDDED IOT HARDWARE',
@@ -341,7 +341,7 @@ export const CASE_STUDIES: CaseStudyData[] = [
       'Campaign Graphics',
     ],
     externalLink: 'https://akeelmohammad.github.io/akeel-mohammad-design-portfolio/',
-    buttonText: 'View Live Portfolio',
+    buttonText: 'Live Portfolio',
     videoUrl: '',
     accentColor: '#ff7d3d',
     categoryBadge: 'EXTERNAL PROJECT · GRAPHIC DESIGN & DIGITAL CREATIVE',
